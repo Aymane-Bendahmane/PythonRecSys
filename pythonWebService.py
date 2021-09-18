@@ -18,13 +18,16 @@ def home():
     id = request.args.get('id', default = 1, type = int)
     
     query_results =  getDataFromDb()
-
-    df = pd.DataFrame(query_results,columns={"rating_id","rating","article_id","id_user"})
-
+    print(query_results)
+    columns = []
+  
+    df = pd.DataFrame(query_results)
+    df.columns = ["rating_id","rating","article_id","id_user"]
+    print(df)
     df.groupby('article_id')['rating'].mean().sort_values(ascending=False)
     df.groupby('article_id')['rating'].count().sort_values(ascending=False)
     ratings = pd.DataFrame(df.groupby('article_id')['rating'].mean())
-    print(ratings)
+    #print(ratings)
     ratings['num of ratings'] = pd.DataFrame(df.groupby('article_id')['rating'].count())
     moviemat = df.pivot_table(index='id_user',columns='article_id',values='rating')
 
@@ -57,7 +60,7 @@ def getDataFromDb():
 def db():
     conn = psycopg2.connect(host="localhost", port = 5432, database="Ecommerce_db", user="postgres", password="admin")
     cur = conn.cursor()
-    cur.execute("""SELECT * FROM rating""")
+    cur.execute("SELECT * FROM rating")
     query_results = cur.fetchall()
     print(query_results)
     return jsonify({"Ratings":query_results})
