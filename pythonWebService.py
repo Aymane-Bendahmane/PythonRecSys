@@ -3,22 +3,28 @@ from flask import request
 import numpy as np
 import pandas as pd
 import psycopg2
+#   How ro run the project
+#   pip install pandas
+#   pip install flask
+#   pip install numpy
+#   pip install psycopg2
+
+#   $env:FLASK_APP = "pythonWebService" 
+#   python -m flask run
 
 pythonWebService = Flask(__name__)
 @pythonWebService.route("/Rec" )
 def home():
     id = request.args.get('id', default = 1, type = int)
-    print(id)
-    conn = psycopg2.connect(host="localhost", port = 5432, database="Ecommerce_db", user="postgres", password="admin")
-    cur = conn.cursor()
-    cur.execute("""SELECT * FROM rating""")
-    query_results = cur.fetchall()
+    
+    query_results =  getDataFromDb()
 
     df = pd.DataFrame(query_results,columns={"rating_id","rating","article_id","id_user"})
 
     df.groupby('article_id')['rating'].mean().sort_values(ascending=False)
     df.groupby('article_id')['rating'].count().sort_values(ascending=False)
     ratings = pd.DataFrame(df.groupby('article_id')['rating'].mean())
+    print(ratings)
     ratings['num of ratings'] = pd.DataFrame(df.groupby('article_id')['rating'].count())
     moviemat = df.pivot_table(index='id_user',columns='article_id',values='rating')
 
@@ -35,6 +41,16 @@ def home():
     recommendation = corr_item0[corr_item0['num of ratings']>0].sort_values('Correlation',ascending=False)
     return recommendation.head().to_dict()
 
+def getDataFromDb():
+    conn = psycopg2.connect(host="localhost", port = 5432, database="Ecommerce_db", user="postgres", password="admin")
+    cur = conn.cursor()
+    cur.execute("""SELECT * FROM rating""")
+    query_results = cur.fetchall()
+
+    return query_results ;
+
+
+
 
 
 @pythonWebService.route("/db")
@@ -45,4 +61,5 @@ def db():
     query_results = cur.fetchall()
     print(query_results)
     return jsonify({"Ratings":query_results})
+
 
