@@ -50,9 +50,14 @@ def home():
     corr_item0 = pd.DataFrame(similar_to_item0, columns=['Correlation'])
     corr_item0.dropna(inplace=True)
     corr_item0.sort_values('Correlation', ascending=False)
+    print('-----------------------------------------------')
+    print(corr_item0)
     corr_item0 = corr_item0.join(ratings['num of ratings'])
-    recommendation = corr_item0[corr_item0['num of ratings'] > 0].sort_values(
+    recommendation = corr_item0[corr_item0['num of ratings'] > 3].sort_values(
         'Correlation', ascending=False)
+    print('-----------------------------------------------')
+    print(recommendation)
+
     return recommendation.head().to_dict()
 
 
