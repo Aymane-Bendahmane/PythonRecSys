@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import psycopg2
 import flask_cors 
-
+import py_eureka_client.eureka_client as eureka_client
 from  flask_cors import CORS
 
 #   How ro run the project
@@ -15,7 +15,11 @@ from  flask_cors import CORS
 
 #   $env:FLASK_APP = "pythonWebService"
 #   python -m flask run
-
+rest_port = 8050
+eureka_client.init(eureka_server="http://localhost:8761/eureka",
+                   app_name="Recommendation-system",
+                   instance_host='localhost',
+                   instance_port=rest_port)
 pythonWebService = Flask(__name__)
 CORS(pythonWebService)
 
@@ -80,3 +84,6 @@ def db():
     query_results = cur.fetchall()
     print(query_results)
     return jsonify({"Ratings": query_results})
+
+if __name__ == "__main__":
+    pythonWebService.run(host='localhost', port = rest_port)
