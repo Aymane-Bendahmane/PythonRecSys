@@ -12,7 +12,7 @@ from  flask_cors import CORS
 #   pip install flask
 #   pip install numpy
 #   pip install psycopg2
-
+#   pip install flask pandas py-eureka-client
 #   $env:FLASK_APP = "pythonWebService"
 #   python -m flask run
 rest_port = 8050
